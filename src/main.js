@@ -20,15 +20,18 @@ function startApp(){
 	isClipboardChanged(clipboard, text => {
 		stack = addToStack(text, stack);
 		console.log("stack is ",stack);
-		tray.setContextMenu(Menu.buildFromTemplate(newMenuTemplate(stack)));
+		tray.setContextMenu(Menu.buildFromTemplate(newMenuTemplate(clipboard, stack)));
 	});
 }
 
-function newMenuTemplate(stack){
+function newMenuTemplate(clipboard, stack){
 	return stack.map((item, i) => {
 		return {
 
-			label: `Copy: ${formatItem(item)}`
+			label: `Copy: ${formatItem(item)}`,
+			click: () => {
+				clipboard.writeText(item);
+			}
 		}
 	});
 }
@@ -47,6 +50,7 @@ function addToStack(item, stack){
 
 function isClipboardChanged(clipboard, onChange) {
 	let cache = clipboard.readText();
+	let latest;
 	setInterval(() => {
 		latest = clipboard.readText();
 		if(latest !== cache){
