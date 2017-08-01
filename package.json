@@ -1,0 +1,13 @@
+{
+  "name": "multiple-copy-app",
+  "productName": "Multiple Copy",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "keywords": [],
+  "author": "Omprakash Panigrahi",
+  "license": "ISC"
+}
