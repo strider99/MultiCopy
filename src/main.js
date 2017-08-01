@@ -14,7 +14,8 @@ function newMenuTemplate(clipboard, stack){
 			label: `Copy: ${formatItem(item)}`,
 			click: () => {
 				clipboard.writeText(item);
-			}
+			},
+			accelerator: `Ctrl+Shift+${i+1}`
 		}
 	});
 }
@@ -51,7 +52,6 @@ function registerShortcuts( globalShortcut, clipboard, stack) {
 	}
 
 }
-
 function startApp(){
 	let stack = [];
 	const tray = new Tray(path.join('src','icon.png'));
@@ -74,7 +74,8 @@ function startApp(){
 }
 
 function closeApp(){
+	globalShortcut.unregisterAll();
 	app.quit();
 }
 app.on('ready', startApp);
-app.on('closed', closeApp);
+app.on('will-quit', closeApp);
