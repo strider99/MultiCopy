@@ -9,5 +9,8 @@
   },
   "keywords": [],
   "author": "Omprakash Panigrahi",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^1.6.11"
+  }
 }
