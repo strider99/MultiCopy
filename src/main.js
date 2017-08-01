@@ -3,6 +3,7 @@ const path = require('path');
 
 const {app, clipboard, Menu, Tray} = electron;
 const STACK_SIZE = 10;
+const ITEM_MAX_LENGTH = 15;
 
 function startApp(){
 	let stack = [];
@@ -19,7 +20,23 @@ function startApp(){
 	isClipboardChanged(clipboard, text => {
 		stack = addToStack(text, stack);
 		console.log("stack is ",stack);
+		tray.setContextMenu(Menu.buildFromTemplate(newMenuTemplate(stack)));
 	});
+}
+
+function newMenuTemplate(stack){
+	return stack.map((item, i) => {
+		return {
+
+			label: `Copy: ${formatItem(item)}`
+		}
+	});
+}
+
+function formatItem(item){
+	return item && item.length > ITEM_MAX_LENGTH
+		? item.substr(0, ITEM_MAX_LENGTH) + '...'
+		: item
 }
 
 function addToStack(item, stack){
@@ -36,7 +53,7 @@ function isClipboardChanged(clipboard, onChange) {
 			cache = latest;
 			onChange(cache);
 		}
-	});
+	},1000);
 }
 
 function closeApp(){
