@@ -1,28 +1,11 @@
 const electron = require('electron');
 const path = require('path');
 
-const {app, clipboard, Menu, Tray} = electron;
-const STACK_SIZE = 10;
+const {app, clipboard, globalShortcut, Menu, Tray} = electron;
+const STACK_SIZE = 5;
 const ITEM_MAX_LENGTH = 15;
 
-function startApp(){
-	let stack = [];
-	const tray = new Tray(path.join('src','icon.png'));
-	let template = [
-		{
-			label: '<empty>',
-			enabled: false
-		}
-	];
-	let menu = Menu.buildFromTemplate(template);
-	tray.setContextMenu(menu);
 
-	isClipboardChanged(clipboard, text => {
-		stack = addToStack(text, stack);
-		console.log("stack is ",stack);
-		tray.setContextMenu(Menu.buildFromTemplate(newMenuTemplate(clipboard, stack)));
-	});
-}
 
 function newMenuTemplate(clipboard, stack){
 	return stack.map((item, i) => {
@@ -47,7 +30,6 @@ function addToStack(item, stack){
 }
 
 
-
 function isClipboardChanged(clipboard, onChange) {
 	let cache = clipboard.readText();
 	let latest;
@@ -58,6 +40,37 @@ function isClipboardChanged(clipboard, onChange) {
 			onChange(cache);
 		}
 	},1000);
+}
+
+function registerShortcuts( globalShortcut, clipboard, stack) {
+	globalShortcut.unregisterAll();
+	for(let i = 0; i < STACK_SIZE; i++){
+		globalShortcut.register(`Ctrl+Shift+${i+1}`, () => {
+			clipboard.writeText(stack[i]);
+		});
+	}
+
+}
+
+function startApp(){
+	let stack = [];
+	const tray = new Tray(path.join('src','icon.png'));
+	let template = [
+		{
+			label: '<empty>',
+			enabled: false
+		}
+	];
+	let menu = Menu.buildFromTemplate(template);
+	tray.setContextMenu(menu);
+
+	isClipboardChanged(clipboard, text => {
+		stack = addToStack(text, stack);
+		console.log("stack is ",stack);
+		tray.setContextMenu(Menu.buildFromTemplate(newMenuTemplate(clipboard, stack)));
+		registerShortcuts(globalShortcut, clipboard, stack);
+	});
+
 }
 
 function closeApp(){
